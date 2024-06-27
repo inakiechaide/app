@@ -80,7 +80,6 @@ function dibujar() {
     dibujarNotas();
 }
 
-// Función para dibujar la escala de notas
 function dibujarNotas() {
     ctxNotas.fillStyle = '#f0f0f0';
     ctxNotas.fillRect(0, 0, canvasNotas.width, canvasNotas.height);
@@ -93,41 +92,64 @@ function dibujarNotas() {
         ctxNotas.fillText(nota, x + 10, canvasNotas.height / 2);
     });
 
-    // Detectar la frecuencia dominante de la voz y la guitarra
-    let frecuenciaVoz = obtenerFrecuenciaDominante(dataArrayVoz);
-    let frecuenciaGuitarra = obtenerFrecuenciaDominante(dataArrayGuitarra);
+    // Función para obtener la frecuencia actual de la voz
+function obtenerFrecuenciaActual() {
+    let bufferLength = analyserVoz.frequencyBinCount;
+    let dataArrayVoz = new Uint8Array(bufferLength);
+    analyserVoz.getByteFrequencyData(dataArrayVoz);
 
-    // Convertir frecuencias a notas musicales
-    let notaVoz = convertirAFrecuenciaANota(frecuenciaVoz);
-    let notaGuitarra = convertirAFrecuenciaANota(frecuenciaGuitarra);
+    // Aquí puedes implementar la lógica para determinar la frecuencia dominante
+    // Por ejemplo, puedes encontrar la frecuencia pico o la frecuencia promedio
 
-    // Mostrar notas en el canvas
-    ctxNotas.fillStyle = 'blue';
-    ctxNotas.fillText(`Voz: ${notaVoz}`, canvasNotas.width / 2 - 50, canvasNotas.height / 2 - 20);
-    ctxNotas.fillText(`Guitarra: ${notaGuitarra}`, canvasNotas.width / 2 - 50, canvasNotas.height / 2 + 20);
+    let maxValue = Math.max(...dataArrayVoz); // Encontrar el valor máximo en el array de datos
+    let maxIndex = dataArrayVoz.indexOf(maxValue); // Encontrar el índice del valor máximo
 
-    // Comparar las notas y mostrar resultado
-    if (notaVoz === notaGuitarra) {
-        ctxNotas.fillStyle = 'green';
-        ctxNotas.fillText('Afinado', canvasNotas.width / 2 + 50, canvasNotas.height / 2);
-    } else {
-        ctxNotas.fillStyle = 'red';
-        ctxNotas.fillText('Desafinado', canvasNotas.width / 2 + 50, canvasNotas.height / 2);
-    }
-}
+    // Convertir el índice en frecuencia (basado en la resolución del análisis)
+    let frequency = maxIndex * audioContext.sampleRate / analyserVoz.fftSize;
 
-// Función para obtener la frecuencia dominante de un array de datos de frecuencia
-function obtenerFrecuenciaDominante(dataArray) {
-    let max = Math.max(...dataArray);
-    let index = dataArray.findIndex(element => element === max);
-    let frequency = index * audioContext.sampleRate / analyserVoz.fftSize;
     return frequency;
 }
 
 // Función para convertir frecuencia a nota musical (simplificada)
 function convertirAFrecuenciaANota(frecuencia) {
-    if (frecuencia === 0) return '-';
     let notas = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     let noteIndex = Math.round((12 * Math.log2(frecuencia / 440.0)) + 69);
     return notas[noteIndex % 12];
 }
+
+// Función para dibujar las notas en el canvasNotas
+function dibujarNotas() {
+    ctxNotas.fillStyle = '#f0f0f0';
+    ctxNotas.fillRect(0, 0, canvasNotas.width, canvasNotas.height);
+
+    let notas = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    let step = canvasNotas.width / notas.length;
+    ctxNotas.fillStyle = 'black';
+    notas.forEach((nota, index) => {
+        let x = step * index;
+        ctxNotas.fillText(nota, x + 10, canvasNotas.height / 2);
+    });
+
+    // Mostrar la frecuencia y nota correspondiente
+    let frecuenciaActual = obtenerFrecuenciaActual();
+    let notaCorrespondiente = convertirAFrecuenciaANota(frecuenciaActual);
+    ctxNotas.fillStyle = 'blue';
+    ctxNotas.fillText(notaCorrespondiente, canvasNotas.width / 2, canvasNotas.height / 2);
+}
+
+
+    // Aquí puedes añadir lógica para mostrar la frecuencia actual y comparar con la guitarra
+    // Ejemplo de cómo visualizar las notas:
+    // let frecuenciaActual = obtenerFrecuenciaActual(); // Implementa esta función
+    // let notaCorrespondiente = convertirAFrecuenciaANota(frecuenciaActual);
+    // ctxNotas.fillStyle = 'blue';
+    // ctxNotas.fillText(notaCorrespondiente, canvasNotas.width / 2, canvasNotas.height / 2);
+}
+
+// Función para convertir frecuencia a nota musical (simplificada)
+function convertirAFrecuenciaANota(frecuencia) {
+    let notas = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    let noteIndex = Math.round((12 * Math.log2(frecuencia / 440.0)) + 69);
+    return notas[noteIndex % 12];
+}
+
