@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala de Notas y Visualización de Audio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+        #control-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Escala de Notas y Visualización de Audio</h1>
+    <div id="control-panel">
+        <button id="start-button">Iniciar Grabación</button>
+        <button id="stop-button" style="display: none;">Detener Grabación</button>
+    </div>
+    <canvas id="canvas-voz" width="800" height="200"></canvas>
+    <canvas id="canvas-guitarra" width="800" height="200"></canvas>
+    <canvas id="canvas-notas" width="800" height="200"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>
